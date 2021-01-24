@@ -17,9 +17,19 @@
  ******************************************************************************
  */
 
-
 #include<stdio.h>
+
+extern void initialise_monitor_handles(void);// this is the prototype
+
 int main(void)
-{	printf("Hello World");
-	for(;;);
+{
+	int b=0,i;
+	initialise_monitor_handles(); // before using any printf statement call this function
+
+	for(;;)
+	{
+		printf("Hello World\n");
+		b++;
+		for(i=0;i<10000;i++);
+	}
 }
