@@ -19,6 +19,7 @@ extern void ReadDateNTime();
 
 extern unsigned char TimeString1[9];
 extern unsigned char DateString1[11];
+extern unsigned char RTC_ARR[9];
 
 
 

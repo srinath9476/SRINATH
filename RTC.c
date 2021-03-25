@@ -407,7 +407,7 @@ void ReadDateNTime()
 
 void WriteDateNTime()
 {
-	unsigned char aT[]={'0','0','5','1','1','1','0','6','1','9','0','3','2','1'};
+	unsigned char aT[]={'0','0','2','4','1','8','0','5','2','4','0','3','2','1'};
 	int datec;
 	/*
 	RTC_ARR[0]=(((TimeString1[7]&0x0f)<<4)+(TimeString1[6]&0x0f))//seconds updation

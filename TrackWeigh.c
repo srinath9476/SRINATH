@@ -112,10 +112,11 @@ void SendNextAxle(void);
 
 //|************** changed*****************************//
 int j;
+
 int DisplayCheck[]={0xfe,0xfd,0xfb,0xf7,0xef,0xdf, 0xbf,0x7f,0xc0,0xf9,0xa4,0xb0,0x99, 0x92, 0x82, 0xf8, 0x80, 0x90,0xff}; //18 numbers
 int DisplayNumber[]={0xc0,0xf9,0xa4,0xb0,0x99, 0x92, 0x82, 0xf8, 0x80, 0x90,0xBF};//to display "0,1,2,3,4,5,6,7,8,9,-" in Segment
 int DisplaySelect[]={0x38,0x30,0x28,0x20,0x18,0x10,0x08,0x00}; // To Select individul Segments [0] is '1's location
-																							// [7] is '10M'`s location 
+																						// [7] is '10M'`s location 
 																							
 //char CharToNumber[]={'0','1','2','3','4','5','6','7','8','9'};
 char CharToNumber[]={'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','X','Y','Z','a','b','c','d','e','f','g','h',' '};																							
@@ -331,6 +332,7 @@ signed int DataAddress1=0;
 char DiData[3]={0,0,0};
 char CEstring[10],STAstring[10];
 int StaCount=0,SavingCount=0,ErrSgnl=0;
+char datec1;
 //|************** changed*****************************//
 
 
@@ -400,12 +402,14 @@ void main(void)
 		
 		
 		//if(StaCount>10)    																// changed on 19 -Mar 21 
-		if(StaCount>15)
+		if(StaCount>5)
 		{
 			SetContinous=0;
 			Stable_Check();
+			OnBoardDisplay(DataToUpdate);
 			delay(50);  // Transmission delay from EM100 to RTU is setted to 100ms 
 			StaCount=0;
+			
 			
 		}
 		else
@@ -570,7 +574,7 @@ void main(void)
 				else {DataToUpdate=WeightToUpdate;}
 			}
 			else 
-			{ DataToUpdate=WeightToUpdate;	}
+			{ DataToUpdate=WeightToUpdate; 	}
 			
 			//OnBoardDisplay(DataToUpdate);
 			
@@ -706,15 +710,23 @@ void CalibrationCheck(void)
 			for(izx=0;izx<5000;izx++){
 			DisplayTackCntr();}
 			
-			//EWriteDateNTime();
-			delay(2000);
+			for(datec1=0;datec1<6;datec1++)
+			{
+		  		KEYDecoder=DisplaySelect[datec1];
+				ModuleAddress=DisplayNumber[0x00];
+				//ModuleAddress=DisplayNumber[DJ];
+				//delay(100);
+			}
+			
+			
 			ReadDateNTime();
+			delay(200);
+			
+			//EWriteDateNTime();
+			//delay(2000);
+			
 			EReadDateNTime();
-	 //delay(100);
-			delay(20000);
-			//ReadDateNTime();
-	 //delay(100);
-			delay(2000);
+			delay(200);
 			return; 
 		}	
 		if(KEY4==0)
@@ -1008,7 +1020,7 @@ void EnterPasswordByKey(void)
    
    /*************************************/
    	
-	PWD_Checking(); //-------------------------->966 line
+	PWD_Checking(); //-------------------------->1029 line
 	
 	/*************************************/
 	
@@ -1093,7 +1105,8 @@ void CalSel(void)
 		while(KEY1==0);
 		PC_LDU_CAL=0;
 		DIRECT_LDU_CAL=1;
-		for(iij=0;iij<2000;iij++)
+		//for(iij=0;iij<2000;iij++)    // Changed on 23-03-21
+		for(iij=0;iij<200;iij++)
 		{
 		DisplayRT2EM();}
 		
@@ -1681,7 +1694,7 @@ void CalProc(void)
 				}
 			}
 		}
-		//if(((KEY3==0)&&(inc[1]==9))||(CalPar[0][21]==1))
+		//if(((KEY3==0)&&(inc[1]==9))||(CalPar[0][21]==1))   Save Option Settings
 		if((KEY3==0)&&(inc[1]==9))
 		{
 			while(KEY3==0);
@@ -1690,6 +1703,13 @@ void CalProc(void)
 			{
 				while(KEY1==0);
 				SaveFunction();
+				
+				
+				ReadDateNTime();
+				delay(200);
+				
+				EWriteDateNTime();
+				delay(2000);
 				
 				inc[1]=10;
 				for(CalPar[39][22]=0;CalPar[39][22]<39;CalPar[39][22]++){
@@ -1708,7 +1728,7 @@ void CalProc(void)
 				
 		}
 		
-		if((KEY3==0)&&(inc[1]==10))
+		if((KEY3==0)&&(inc[1]==10))         // Exit Block
 		{
 			while((KEY3==0));
 			for(CalPar[39][22]=0;CalPar[39][22]<39;)
@@ -4292,9 +4312,11 @@ void Com1Rx(void)
     //    /* When an error occurred, please perform error processing */
     //}
     //else{
-		CharRTable[1][CharIn[1]++] = rcv_data;
-		//CharIn[1]++;
 		if (CharIn[1] >= 100) CharIn[1]=0;
+		CharRTable[1][CharIn[1]++] = rcv_data;
+		//CharRTable[1][CharIn[1]++] = u1rbl;
+		//CharIn[1]++;
+		//if (CharIn[1] >= 100) CharIn[1]=0;
 		//SecondPort=1;
 		
 		Int=1;
